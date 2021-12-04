@@ -6,8 +6,9 @@ jobs:
     docker:
       - image: "cimg/base:stable"
     steps:
-      - node/install
       - checkout
+      - node/install
+      - node/install-packages
       - run:
           name: Run Tests
           command: |
