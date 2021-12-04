@@ -1,0 +1,16 @@
+{
+  "environment": {
+    "env1": {
+      "passwordFile": "passwordFile1.properties",
+      "data": "C:\\Users\\user\\Desktop\\data.json",
+      "method": "GET",
+      "proxy": "1.2.3.4"
+    },
+    "env2": {
+      "passwordFile": "passwordFile2.properties",
+      "uri": "http://1.2.3.4/uri/test",
+      "data": "C:\\Users\\user2\\Desktop\\data.json",
+      "method": "POST"
+    }
+  }
+}
