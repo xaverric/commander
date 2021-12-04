@@ -1,0 +1,9 @@
+{
+  "environment": {
+    "env1": {
+      "uri": "https://uri.com",
+      "unwanted": "value",
+      "proxy": "1.2.3.4"
+    }
+  }
+}

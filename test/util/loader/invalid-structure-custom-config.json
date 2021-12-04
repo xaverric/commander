@@ -1,0 +1,6 @@
+{
+  "env": {
+    "passwordFile": "test",
+    "uri": "https://uri.com"
+  }
+}
