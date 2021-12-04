@@ -2,6 +2,8 @@
 
 An amazing command line tool allowing you to call commands with a list of dtoIn on the commands which does not accept the dtoIn list.
 
+[![CircleCI](https://circleci.com/gh/xaverric/commander/tree/master.svg?style=shield)](https://circleci.com/gh/xaverric/commander/tree/master)
+
 ### Installation
 ```
 npm install -g uucommander
