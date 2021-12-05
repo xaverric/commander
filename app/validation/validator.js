@@ -34,13 +34,16 @@ const getValidationResult = (data, schema) => {
 };
 
 const _getErrors = (data, schema) => _getKeys(schema)
-  .filter((key) => {
-    if (data.environment) {
-      Object.keys(data?.environment)?.forEach((envName) => !schema[key](data.environment[envName]));
-    } else {
-      return !schema[key](data[key]);
-    }
-  }).map((key) => `[ERROR]: item "${key}" is empty or invalid. Value: "${data[key]}".`);
+  .filter((key) => filterErrors(data, schema, key))
+  .map((key) => `[ERROR]: item "${key}" is empty or invalid. Value: "${data[key]}".`);
+
+const filterErrors = (data, schema, key) => {
+  if (data.environment) {
+    Object.keys(data.environment).forEach(envName => !schema[key](data.environment[envName]));
+  } else {
+    return !schema[key](data[key]);
+  }
+};
 
 const _getWarnings = (data, schema) => {
   const dataKeys = _getKeys(data);

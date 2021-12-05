@@ -4,16 +4,13 @@ const HttpsProxyAgent = require('https-proxy-agent');
 /**
  * Calls any command with given dtoIn.
  *
- * @param uri uri to be called
  * @param config contains information about uri, HTTP method or proxy configuration
  * @param data request body
  * @param token authorization token, if empty, dtoIn is prepared in a way for oidc/grantToken
  * @return {Promise<*>}
  */
 const callCommand = async (config, data, token = null) => {
-  console.log(config);
   const dtoIn = prepareDtoIn(config, data, token);
-  console.log(dtoIn);
   token && console.log(`Calling command ${dtoIn.method}: ${config.uri} with dtoIn:\n${stringifyDtoIn(dtoIn)}`);
   const response = await fetch(config.uri, dtoIn);
   return await response.json();
