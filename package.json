@@ -29,5 +29,9 @@
     },
     "bin": {
         "uucommander": "cli.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/xaverric/commander.git"
     }
 }
