@@ -1,6 +1,6 @@
 {
     "name": "uucommander",
-    "version": "2.0.0",
+    "version": "2.0.1",
     "description": "An amazing command line tool allowing you to call commands with a list of dtoIn on the commands which does not accept the dtoIn list.",
     "main": "cli.js",
     "scripts": {
