@@ -1,4 +1,4 @@
-const printJson = require('../util/cmdtools/printFormattedJson');
+const logger = require('../../config/logger');
 
 /**
  * Performs validation of given data against provided schema definition.
@@ -8,14 +8,14 @@ const printJson = require('../util/cmdtools/printFormattedJson');
  *
  * @param data
  * @param schema
+ * @returns {boolean}
  */
 const validate = (data, schema) => {
   const [errors, warnings] = getValidationResult(data, schema);
-  errors.forEach((err) => console.log(err));
-  warnings.forEach((warn) => console.log(warn));
+  errors.forEach((err) => logger.error(err));
+  warnings.forEach((warn) => logger.warn(warn));
   if (errors.length > 0) {
-    console.log(`${printJson(data)}`);
-    process.exit();
+    throw new Error('Terminating further processing.');
   }
 };
 
@@ -35,10 +35,10 @@ const getValidationResult = (data, schema) => {
 
 const _getErrors = (data, schema) => _getKeys(schema)
   .filter((key) => filterErrors(data, schema, key))
-  .map((key) => `[ERROR]: item "${key}" is empty or invalid. Value: "${data[key]}".`);
+  .map((key) => `Item ${key} is empty or invalid. Value: ${data[key]}.`);
 
 const filterErrors = (data, schema, key) => {
-  if (data.environment) {
+  if (data?.environment) {
     Object.keys(data.environment).forEach(envName => !schema[key](data.environment[envName]));
   } else {
     return !schema[key](data[key]);
@@ -51,7 +51,7 @@ const _getWarnings = (data, schema) => {
 
   return dataKeys
     .filter((key) => !schemaKeys.includes(key))
-    .map((key) => `[WARNING]: item "${key}" is not defined in validation schema. Item will be ignored.`);
+    .map((key) => `Item ${key} is not defined in validation schema. Item will be ignored.`);
 };
 
 const _getKeys = (data) => {

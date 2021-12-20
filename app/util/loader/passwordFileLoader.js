@@ -1,13 +1,14 @@
 const propertiesReader = require('properties-reader');
 const validate = require('../../validation/validator');
 const dataSchema = require('../../validation/passwordfile/schema');
+const logger = require('../../../config/logger');
 
 const ACCESS_CODE_1 = 'credentials.accessCode1';
 const ACCESS_CODE_2 = 'credentials.accessCode2';
 const OIDC_HOST = 'oidc.oidcHost';
 
 const loadPasswordFile = (path) => {
-  console.log(`Loading credentials information from path: ${path}`);
+  logger.debug(`Loading credentials information from path: ${path}`);
   const pwdProperties = propertiesReader(path);
   const pwdConfig = _transformPropsIntoObject(pwdProperties);
   validate(pwdConfig, dataSchema);

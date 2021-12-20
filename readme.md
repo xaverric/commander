@@ -4,7 +4,7 @@ An amazing command line tool allowing you to call commands with a list of dtoIn 
 
 [![CircleCI](https://circleci.com/gh/xaverric/commander/tree/master.svg?style=shield)](https://circleci.com/gh/xaverric/commander/tree/master)
 
-### Installation
+## Installation
 ```
 npm install -g uucommander
 ```
@@ -35,7 +35,7 @@ URI which will be repeatedly called with the data from dtoIn.
 HTTP request method to be used with command call. It is needed to be defined in upper case. Supported methods: GET, POST, PUT, DELETE
 
 ###  -d, --data [string]
-Path specifying location data file with list of dtoIn. The file needs to be written according to the following convention. Each dtoIn inside the itemList array must meet the criteria of the dtoIn for the uri to be called.
+Path specifying location data file with list of dtoIn. Path can be absolute or relative. In case relative path is defined, it is relative to the base folder ```$HOME/.uucommander```. The file needs to be written according to the following convention. Each dtoIn inside the itemList array must meet the criteria of the dtoIn for the uri to be called.
 
 **Data File Convention**
 ```json
@@ -46,6 +46,9 @@ Path specifying location data file with list of dtoIn. The file needs to be writ
   ]
 }
 ```
+### -o --output [string]
+Path specifying location for the output generated during the run command. Each command call is represented with the *.dtoIn.json and *.dtoOut.json
+
 ### -c, --config [string]
 Custom configuration file path. By default, the configuration is being read from $HOME/.commander/config/cfg.json). In case the custom file path is not provided, and default configuration also does not exists, the tool will use only the arguments provided from command line.
 
@@ -84,5 +87,35 @@ oidcHost = ...
 ### --proxy [string]
 Proxy configuration uri to allow communication sending request via proxy.
 
+### --debug
+Flag defining whether debug information should be logged into the console.
+
 ### -h, --help                  
 Display the usage guide
+
+## Change Log
+### 2.1.0 - 20.12.2021
+* any file path in the configuration can now be both - absolute or relative
+  * if relative path is used, it is always relative to the ```$HOME/.uucommander``` path.
+* improved logging - integration of [winston](https://github.com/winstonjs/winston) logger library.
+  * all logs with various levels can be found in the ```$HOME/.uucommander/logs``` folder.
+  * by default, **info** level is being used for logging into the console
+* new configuration parameter ```--debug``` which allows writing debug information into the console
+* new configuration parameter ```-o, --output``` which saves the results of command calls into the predefined directory 
+  * directory is created if it does not exist
+  * each command call is represented with the ```*.dtoIn.json``` and ```*.dtoOut.json```
+
+### 2.0.1 - 06.12.2021
+* add git link into the ```package.json```
+* minor modifications to remove unwanted logging into the console
+### 2.0.0 - 05.12.2021
+* commander renames to uuCommander and becomes a CLI tool
+* configuration support - configuration can now be loaded from:
+  * default path (```$HOME/.uucommander/cfg.json```)
+  * custom path (any path to the cfg.json file defined via ```--config``` cmd argument)
+  * cmd arguments
+* authentication with ```passwordFile``` 
+* proxy support
+### 1.0.0 - 22.09.2021
+* Call multiple commands with running index.js script and passing it the parameters in correct order
+  * node index.js "username" "password" "http://1.2.3.4:5678" "uu-oidc-maing02" 11111111111111111111111111111111 "user/list" "C:\... \dtoInData.json" "POST"

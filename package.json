@@ -1,21 +1,24 @@
 {
     "name": "uucommander",
-    "version": "2.0.1",
+    "version": "2.1.0",
     "description": "An amazing command line tool allowing you to call commands with a list of dtoIn on the commands which does not accept the dtoIn list.",
     "main": "cli.js",
     "scripts": {
         "test": "jest",
-        "lint": "eslint \".\/**\" --fix"
+        "lint": "eslint \"./**\" --fix"
     },
     "author": "Daniel Jílek",
     "license": "MIT",
     "dependencies": {
+        "axios": "^0.24.0",
         "command-line-args": "^5.2.0",
         "command-line-usage": "^6.1.1",
         "https-proxy-agent": "^5.0.0",
         "isuri": "^2.0.3",
         "node-fetch": "^3.0.0",
-        "properties-reader": "^2.2.0"
+        "properties-reader": "^2.2.0",
+        "request": "^2.88.2",
+        "winston": "^3.3.3"
     },
     "devDependencies": {
         "eslint": "^7.32.0",
