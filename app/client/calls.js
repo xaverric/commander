@@ -1,5 +1,6 @@
 const fetch = (...args) => import('node-fetch').then(({ default: fetch }) => fetch(...args));
 const HttpsProxyAgent = require('https-proxy-agent');
+const logger = require('./../../config/logger');
 
 /**
  * Calls any command with given dtoIn.
@@ -7,13 +8,13 @@ const HttpsProxyAgent = require('https-proxy-agent');
  * @param config contains information about uri, HTTP method or proxy configuration
  * @param data request body
  * @param token authorization token, if empty, dtoIn is prepared in a way for oidc/grantToken
- * @return {Promise<*>}
+ * @returns {Promise<(*|*)[]>}
  */
 const callCommand = async (config, data, token = null) => {
   const dtoIn = prepareDtoIn(config, data, token);
-  token && console.log(`Calling command ${dtoIn.method}: ${config.uri} with dtoIn:\n${stringifyDtoIn(dtoIn)}`);
+  token && logger.debug(`Calling command ${dtoIn.method}: ${config.uri} with dtoIn:\n${stringifyDtoIn(dtoIn)}`);
   const response = await fetch(config.uri, dtoIn);
-  return await response.json();
+  return [await response.json(), response.status];
 };
 
 const prepareDtoIn = (config, data, token) => {
@@ -23,7 +24,7 @@ const prepareDtoIn = (config, data, token) => {
       'Content-Type': 'application/json',
       Accept: 'application/json'
     },
-    body: config.method === 'POST' || !token ? JSON.stringify(data) : null
+    body: shouldFillBody(config, token) ? JSON.stringify(data) : null
   };
   if (token) {
     dtoIn.headers.Authorization = `Bearer ${token}`;
@@ -32,6 +33,10 @@ const prepareDtoIn = (config, data, token) => {
     dtoIn.agent = new HttpsProxyAgent(config.proxy);
   }
   return dtoIn;
+};
+
+const shouldFillBody = (config, token) => {
+  return config.method === 'POST' || !token;
 };
 
 /**

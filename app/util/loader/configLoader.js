@@ -1,22 +1,18 @@
 const fs = require('fs');
-const os = require('os');
 const path = require('path');
 const validate = require('../../validation/validator');
 const configurationSchemaUse = require('../../validation/configuration/schema-use');
 const configurationSchemaRun = require('../../validation/configuration/schema-run');
+const { CONFIG_DEFAULT_PATH, UUCOMMANDER_HOME } = require('../../../config/config');
 
-const CONFIG_BASE_FOLDER_NAME = '.uucommander';
-const CONFIG_FILE_NAME = 'cfg.json';
-const PATH_SEPARATOR = path.sep;
-const HOME = os.homedir();
-const CONFIG_DEFAULT_PATH = `${HOME}${PATH_SEPARATOR}${CONFIG_BASE_FOLDER_NAME}${PATH_SEPARATOR}${CONFIG_FILE_NAME}`;
+const logger = require('./../../../config/logger');
 
 const ALLOWED_CONFIG_ARGUMENTS = Object.keys(configurationSchemaUse);
 
 const loadConfig = (cmdArgs = {}) => {
   const config = _loadConfigFile(cmdArgs);
   const mergedConfig = _mergeConfigurationWithCmdArguments(cmdArgs, config);
-  cmdArgs.command === 'run' ? validate(mergedConfig, configurationSchemaRun) : validate(mergedConfig, configurationSchemaUse);
+  _processConfigForCommand(cmdArgs.command, mergedConfig);
   return mergedConfig;
 };
 
@@ -33,8 +29,7 @@ const _loadConfigFile = (cmdArgs) => {
       data = _loadConfigFromCmdArguments();
     }
   } catch (err) {
-    console.log(`Unexpected error occurred during configuration loading. Stacktrace: ${err}`);
-    process.exit();
+    logger.error(`Unexpected error occurred during configuration loading. Stacktrace: ${err}`);
   }
   return data;
 };
@@ -42,10 +37,10 @@ const _loadConfigFile = (cmdArgs) => {
 const _loadConfigFromCustomPath = (path) => {
   let data;
   if (fs.existsSync(path)) {
-    console.log(`Loading configuration from custom path: ${path}`);
+    logger.debug(`Loading configuration from custom path: ${path}`);
     data = JSON.parse(fs.readFileSync(path));
   } else if (path) {
-    console.log(`Custom path is not valid. The file does not exists. Path: ${path}`);
+    logger.debug(`Custom path is not valid. The file does not exists. Path: ${path}`);
   }
   return data;
 };
@@ -53,16 +48,16 @@ const _loadConfigFromCustomPath = (path) => {
 const _loadConfigFromDefaultPath = () => {
   let data;
   if (fs.existsSync(CONFIG_DEFAULT_PATH)) {
-    console.log(`Loading configuration from default path: ${CONFIG_DEFAULT_PATH}`);
+    logger.debug(`Loading configuration from default path: ${CONFIG_DEFAULT_PATH}`);
     data = JSON.parse(fs.readFileSync(CONFIG_DEFAULT_PATH));
   } else {
-    console.log(`Configuration on default path ${CONFIG_DEFAULT_PATH} does not exist.`);
+    logger.debug(`Configuration on default path ${CONFIG_DEFAULT_PATH} does not exist.`);
   }
   return data;
 };
 
 const _loadConfigFromCmdArguments = (cmdArguments) => {
-  console.log('No configuration found, using command line arguments only.');
+  logger.debug('No configuration found, using command line arguments only.');
   return cmdArguments;
 };
 
@@ -72,8 +67,7 @@ const _mergeConfigurationWithCmdArguments = (cmdArgs, config = {}) => {
     if (_isEnvInConfig(cmdArgs, config) && _isNotEmpty(cmdArgs?.environment)) {
       mergedConfig = { ...config?.environment[cmdArgs?.environment] };
     } else {
-      console.log(`Requested environment does not exist in the configuration: '${cmdArgs?.environment}'`);
-      process.exit();
+      throw new Error(`Requested environment does not exist in the configuration: '${cmdArgs?.environment}'`);
     }
   } else {
     mergedConfig = { ...config };
@@ -96,6 +90,22 @@ const _isEnvInConfig = (cmdArgs, config) => {
 };
 
 const _isNotEmpty = (value) => !!value;
+
+const _processConfigForCommand = (command, configuration) => {
+  if (command === 'run') {
+    validate(configuration, configurationSchemaRun);
+    _transformRelativePathToAbsolute(configuration);
+  } else if (command === 'use') {
+    validate(configuration, configurationSchemaUse);
+  } else {
+    throw new Error(`Invalid command used: ${command}`);
+  }
+};
+
+const _transformRelativePathToAbsolute = config => {
+  config.passwordFile = path.isAbsolute(config.passwordFile) ? config.passwordFile : path.resolve(UUCOMMANDER_HOME, config.passwordFile);
+  config.data = path.isAbsolute(config.data) ? config.data : path.resolve(UUCOMMANDER_HOME, config.data);
+};
 
 module.exports = {
   loadConfig

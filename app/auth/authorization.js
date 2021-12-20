@@ -10,7 +10,7 @@ const login = async (config) => {
     scope: 'openid https:// http://localhost'
   };
 
-  const response = await callCommand({ ...config, uri: pwdFile.oidcHost }, credentials);
+  const [response] = await callCommand({ ...config, uri: pwdFile.oidcHost }, credentials);
   return response.id_token;
 };
 

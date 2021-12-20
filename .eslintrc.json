@@ -20,5 +20,5 @@
             }
         }
     ],
-    "ignorePatterns": ["**/*.json", "**/*.md"]
+    "ignorePatterns": ["**/*.json", "**/*.md", "**/*.properties"]
 }
